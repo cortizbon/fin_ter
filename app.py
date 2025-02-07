@@ -8,7 +8,9 @@ st.set_page_config(layout='wide')
 st.title("Finanzas territoriales")
 
 ing = pd.read_csv('ingresos_limpios.csv')
+ing['APROPIACION_DEFINITIVA'] /= 1_000_000
 gas = pd.read_csv('gastos_limpios.csv')
+gas['APROPIACION_DEFINITIVA'] /= 1_000_000
 
 ents = ing['NOMBRE_ENTIDAD'].sort_values().unique().tolist() 
 years = ing['Año'].sort_values().unique().tolist()
