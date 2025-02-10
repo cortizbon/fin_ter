@@ -2,13 +2,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from plotly.subplots import make_subplots
+from io import BytesIO
 
 st.set_page_config(layout='wide')
 
 st.title("Finanzas territoriales")
 
 ing = pd.read_csv('ingresos_limpios.csv')
-ing['APROPIACION_DEFINITIVA'] = (ing['APROPIACION_DEFINITIVA'] / 1_000_000).round(1)
+ing['AFORO_DEFINITIVO'] = (ing['AFORO_DEFINITIVO'] / 1_000_000).round(1)
 gas = pd.read_csv('gastos_limpios.csv')
 gas['APROPIACION_DEFINITIVA'] = (gas['APROPIACION_DEFINITIVA'] / 1_000_000).round(1)
 
@@ -23,21 +24,21 @@ ent = st.selectbox("Seleccione entidad", ents)
 
 filtro = ing[ing['NOMBRE_ENTIDAD'] == ent]
 
-tab = filtro.groupby(['Año','RUBRO'])['APROPIACION_DEFINITIVA'].sum().reset_index()
+tab = filtro.groupby(['Año','RUBRO'])['AFORO_DEFINITIVO'].sum().reset_index()
 
 
 filtro2 = gas[gas['NOMBRE_ENTIDAD'] == ent]
 
-tab2 = filtro2.groupby(['Año','col_2'])['APROPIACION_DEFINITIVA'].sum().reset_index()
+tab2 = filtro2.groupby(['Año','col_2'])['AFORO_DEFINITIVO'].sum().reset_index()
 
 fig1 = px.area(tab, 
                x='Año',
-               y='APROPIACION_DEFINITIVA',
+               y='AFORO_DEFINITIVO',
                color='RUBRO',
               title='Ingresos')
 fig2 = px.area(tab2, 
                x='Año',
-               y='APROPIACION_DEFINITIVA',
+               y='AFORO_DEFINITIVO',
                color='col_2',
               title='Gastos')
 
@@ -87,3 +88,14 @@ fig.update_layout(title_text=ent,
 
 st.plotly_chart(fig)
 
+binary_output = BytesIO()
+ing.to_excel(binary_output, index=False)
+st.download_button(label = 'Descargar ingresos',
+                    data = binary_output.getvalue(),
+                    file_name = 'ingresos.xlsx')
+
+binary_output = BytesIO()
+gas.to_excel(binary_output, index=False)
+st.download_button(label = 'Descargar gastos',
+                    data = binary_output.getvalue(),
+                    file_name = 'gastos.xlsx')
