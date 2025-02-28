@@ -11,7 +11,8 @@ DIC_COLORES = {'verde':["#009966"],
                'ax_viol': ["#D9D9ED", "#2F399B", "#1A1F63", "#262947"],
                'ofiscal': ["#F9F9F9", "#2635bf"]}
 
-custom_palette = ["#2F399B", "#dd722a", "#F7B261", "#009999", "#81D3CD", "#CBECEF", "#D9D9ED"]
+custom_palette = ["#2F399B", "#dd722a", "#F7B261", "#009999", "#81D3CD", "#CBECEF", "#D9D9ED",
+                  "#2F399B", "#dd722a", "#F7B261", "#009999", "#81D3CD", "#CBECEF", "#D9D9ED"]
 st.set_page_config(layout='wide')
 
 st.title("Finanzas territoriales")
@@ -21,6 +22,7 @@ ing['AFORO_DEFINITIVO'] = (ing['AFORO_DEFINITIVO'] / 1_000_000).round(1)
 
 rubros_i = ing['RUBRO'].unique().tolist()
 custom_map_i = dict(zip(rubros_i, custom_palette))
+
 
 gas = pd.read_csv('gastos_limpios.csv')
 gas['APROPIACION_DEFINITIVA'] = (gas['APROPIACION_DEFINITIVA'] / 1_000_000).round(1)
@@ -86,21 +88,20 @@ tab2 = tab2[tab2['Año'] == year].drop(columns='Año')
 
 # graficar en dos piebars los ingresos y los gastos
 
-fig1 = px.pie(tab, names='RUBRO', values='AFORO_DEFINITIVO', title='Ingresos')
-fig2 = px.pie(tab2, names='col_2', values='APROPIACION_DEFINITIVA', title='Gastos')
 
 # Create Subplots
 fig = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}]])
-
-# Add traces with color specification
+colors_i = [custom_map_i[label] for label in tab['RUBRO'].unique()]
+colors_g = [custom_map_g[label] for label in tab2['col_2'].unique()]
+# Add traces with mapped colors
 fig.add_trace(go.Pie(labels=tab['RUBRO'], 
                      values=tab['AFORO_DEFINITIVO'], 
-                     marker=dict(colors=custom_map_i)), 
+                     marker=dict(colors=colors_i)), 
               row=1, col=1)
 
 fig.add_trace(go.Pie(labels=tab2['col_2'], 
                      values=tab2['APROPIACION_DEFINITIVA'], 
-                     marker=dict(colors=custom_map_g)), 
+                     marker=dict(colors=colors_g)), 
               row=1, col=2)
 
 # Update layout
