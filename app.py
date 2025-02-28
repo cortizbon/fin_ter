@@ -18,11 +18,15 @@ st.title("Finanzas territoriales")
 
 ing = pd.read_csv('ingresos_limpios.csv')
 ing['AFORO_DEFINITIVO'] = (ing['AFORO_DEFINITIVO'] / 1_000_000).round(1)
-rubros = ing['RUBRO'].unique().tolist()
 
-custom_map = dict(zip(rubros, custom_palette))
+rubros_i = ing['RUBRO'].unique().tolist()
+custom_map_i = dict(zip(rubros_i, custom_palette))
+
 gas = pd.read_csv('gastos_limpios.csv')
 gas['APROPIACION_DEFINITIVA'] = (gas['APROPIACION_DEFINITIVA'] / 1_000_000).round(1)
+
+rubros_g = gas['col_2'].unique().tolist()
+custom_map_g = dict(zip(rubros_g, custom_palette))
 
 ents = ing['NOMBRE_ENTIDAD'].sort_values().unique().tolist() 
 years = ing['Año'].sort_values().unique().tolist()
@@ -47,13 +51,13 @@ fig1 = px.area(tab,
                y='AFORO_DEFINITIVO',
                color='RUBRO',
               title='Ingresos',
-              color_discrete_map=custom_map)
+              color_discrete_map=custom_map_i)
 fig2 = px.area(tab2, 
                x='Año',
                y='APROPIACION_DEFINITIVA',
                color='col_2',
               title='Gastos',
-              color_discrete_map=custom_map)
+              color_discrete_map=custom_map_g)
 
 fig = make_subplots(rows=1, cols=2)
 
@@ -91,12 +95,12 @@ fig = make_subplots(rows=1, cols=2, specs=[[{'type':'domain'}, {'type':'domain'}
 # Add traces with color specification
 fig.add_trace(go.Pie(labels=tab['RUBRO'], 
                      values=tab['AFORO_DEFINITIVO'], 
-                     marker=dict(colors=custom_palette)), 
+                     marker=dict(colors=custom_map_i)), 
               row=1, col=1)
 
 fig.add_trace(go.Pie(labels=tab2['col_2'], 
                      values=tab2['APROPIACION_DEFINITIVA'], 
-                     marker=dict(colors=custom_palette)), 
+                     marker=dict(colors=custom_map_g)), 
               row=1, col=2)
 
 # Update layout
